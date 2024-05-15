@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Management System</title>
+</head>
+<body>
+    <h1>Employee Management System</h1>
+    
+    <h2>Create New Employee</h2>
+    <form id="createEmployeeForm">
+        <label for="empName">Name:</label>
+        <input type="text" id="empName" name="empName" required><br><br>
+        
+        <label for="empAge">Age:</label>
+        <input type="number" id="empAge" name="empAge" required><br><br>
+        
+        <label for="empCity">City:</label>
+        <input type="text" id="empCity" name="empCity" required><br><br>
+        
+        <label for="empSalary">Salary:</label>
+        <input type="number" id="empSalary" name="empSalary" required><br><br>
+        
+        <button type="submit">Create Employee</button>
+    </form>
+
+    <h2>Get All Employees</h2>
+    <button id="getAllEmployees">Get All Employees</button>
+    <ul id="employeesList"></ul>
+
+    <script>
+        const baseUrl = 'http://localhost:8080/api';
+
+        // Function to create a new employee
+        document.getElementById('createEmployeeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const employee = {
+                empname: formData.get('empName'),
+                empage: formData.get('empAge'),
+                empcity: formData.get('empCity'),
+                empsalary: formData.get('empSalary')
+            };
+
+            try {
+                const response = await fetch(`${baseUrl}/employees`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(employee)
+                });
+
+                if (response.ok) {
+                    alert('Employee created successfully!');
+                    e.target.reset();
+                } else {
+                    throw new Error('Failed to create employee');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Failed to create employee');
+            }
+        });
+
+        // Function to get all employees
+        document.getElementById('getAllEmployees').addEventListener('click', async () => {
+            try {
+                const response = await fetch(`${baseUrl}/employees`);
+                const employees = await response.json();
+
+                const employeesList = document.getElementById('employeesList');
+                employeesList.innerHTML = '';
+
+                employees.forEach(employee => {
+                    const li = document.createElement('li');
+                    li.textContent = `ID: ${employee.empid}, Name: ${employee.empname}, Age: ${employee.empage}, City: ${employee.empcity}, Salary: ${employee.empsalary}`;
+
+                    // Add update button
+                    const updateButton = document.createElement('button');
+                    updateButton.textContent = 'Update';
+                    updateButton.addEventListener('click', () => {
+                        updateEmployee(employee.empid);
+                    });
+                    li.appendChild(updateButton);
+
+                    // Add delete button
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Delete';
+                    deleteButton.addEventListener('click', () => {
+                        deleteEmployee(employee.empid);
+                    });
+                    li.appendChild(deleteButton);
+
+                    employeesList.appendChild(li);
+                });
+            } catch (error) {
+                console.error(error);
+                alert('Failed to fetch employees');
+            }
+        });
+
+        // Function to update an employee by ID
+        async function updateEmployee(empid) {
+            try {
+                // Prompt user for new employee details
+                const newEmpName = prompt('Enter new name:');
+                const newEmpAge = prompt('Enter new age:');
+                const newEmpCity = prompt('Enter new city:');
+                const newEmpSalary = prompt('Enter new salary:');
+
+                const updatedEmployee = {
+                    empname: newEmpName,
+                    empage: newEmpAge,
+                    empcity: newEmpCity,
+                    empsalary: newEmpSalary
+                };
+
+                const response = await fetch(`${baseUrl}/employees/${empid}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updatedEmployee)
+                });
+
+                if (response.ok) {
+                    alert('Employee updated successfully!');
+                    document.getElementById('getAllEmployees').click(); // Refresh employee list
+                } else {
+                    throw new Error('Failed to update employee');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Failed to update employee');
+            }
+        }
+
+        // Function to delete an employee by ID
+        async function deleteEmployee(empid) {
+            try {
+                const confirmDelete = confirm('Are you sure you want to delete this employee?');
+                if (confirmDelete) {
+                    const response = await fetch(`${baseUrl}/employees/${empid}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        alert('Employee deleted successfully!');
+                        document.getElementById('getAllEmployees').click(); // Refresh employee list
+                    } else {
+                        throw new Error('Failed to delete employee');
+                    }
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Failed to delete employee');
+            }
+        }
+    </script>
+</body>
+</html>
