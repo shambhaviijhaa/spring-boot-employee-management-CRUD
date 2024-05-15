@@ -18,3 +18,16 @@ This repository contains the source code for an Employee Management System built
 - **Git and GitHub:** Version control and repository hosting platform for collaborative development.
 
 This project serves as a practical example of building a full-stack web application with Spring Boot and HTML, showcasing the integration of backend APIs with a simple frontend interface.
+
+## Creating Database
+
+- CREATE DATABASE IF NOT EXISTS EmployeeDB;
+- USE EmployeeDB ;
+- CREATE TABLE Employee (
+ empid bigint NOT NULL AUTO_INCREMENT,
+ emp_name VARCHAR(50) DEFAULT NULL,
+ emp_salary float DEFAULT NULL,
+ emp_age integer DEFAULT NULL,
+ emp_city VARCHAR(50) DEFAULT NULL,
+ PRIMARY KEY (empid)
+ );
