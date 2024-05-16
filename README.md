@@ -34,5 +34,5 @@ This project serves as a practical example of building a full-stack web applicat
 
 ## Set FOLDER_PATH in com.codemyth.service.StorageService.java
 
-- private final String FOLDER_PATH="C:\\Users\\shamb\\eclipse-workspace\\EmployesAPICRUD\\MyFiles";
+- private final String FOLDER_PATH="filePath";
 
