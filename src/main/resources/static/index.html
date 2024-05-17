@@ -30,7 +30,7 @@
     <ul id="employeesList"></ul>
 
     <script>
-        const baseUrl = 'http://localhost:8080/api';
+        const baseUrl = 'http://localhost:8080';
 
         // Function to create a new employee
         document.getElementById('createEmployeeForm').addEventListener('submit', async (e) => {
@@ -44,7 +44,7 @@
             };
 
             try {
-                const response = await fetch(`${baseUrl}/employees`, {
+                const response = await fetch(`${baseUrl}/api/employees`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -67,7 +67,7 @@
         // Function to get all employees
         document.getElementById('getAllEmployees').addEventListener('click', async () => {
             try {
-                const response = await fetch(`${baseUrl}/employees`);
+                const response = await fetch(`${baseUrl}/api/employees`);
                 const employees = await response.json();
 
                 const employeesList = document.getElementById('employeesList');
@@ -117,7 +117,7 @@
                     empsalary: newEmpSalary
                 };
 
-                const response = await fetch(`${baseUrl}/employees/${empid}`, {
+                const response = await fetch(`${baseUrl}/api/employees/${empid}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
@@ -142,7 +142,7 @@
             try {
                 const confirmDelete = confirm('Are you sure you want to delete this employee?');
                 if (confirmDelete) {
-                    const response = await fetch(`${baseUrl}/employees/${empid}`, {
+                    const response = await fetch(`${baseUrl}/api/employees/${empid}`, {
                         method: 'DELETE'
                     });
 
@@ -158,6 +158,82 @@
                 alert('Failed to delete employee');
             }
         }
+    </script>
+    
+    <h1>Image Upload</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" name="image" id="imageInput">
+        <button type="submit">Upload</button>
+    </form>
+
+    <hr>
+
+    <h1>Image Download</h1>
+    <label for="fileNameInput">File Name:</label>
+    <input type="text" id="fileNameInput" name="fileName" placeholder="Enter file name">
+    <button id="downloadImageButton">Download Image</button>
+    <div id="imageContainer"></div>
+
+    <script>
+        const uploadForm = document.getElementById('uploadForm');
+        const imageInput = document.getElementById('imageInput');
+        const imageContainer = document.getElementById('imageContainer');
+
+        uploadForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData();
+            formData.append('image', imageInput.files[0]);
+
+            try {
+                const response = await fetch('/image/fileSystem', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    alert('Image uploaded successfully!');
+                    console.log(data); // Log response from the server
+                } else {
+                    throw new Error('Failed to upload image');
+                }
+            } catch (error) {
+                console.error('Error uploading image:', error);
+                alert('Failed to upload image');
+            }
+        });
+
+        // Function to download image
+        async function downloadImage(fileName) {
+            try {
+                const response = await fetch(`/image/fileSystem/${fileName}`);
+                if (!response.ok) {
+                    throw new Error('Image not found');
+                }
+                const blob = await response.blob();
+                const imageUrl = URL.createObjectURL(blob);
+
+                const img = document.createElement('img');
+                img.src = imageUrl;
+                imageContainer.innerHTML = ''; // Clear previous image
+                imageContainer.appendChild(img);
+            } catch (error) {
+                console.error('Error downloading image:', error);
+                alert('Error downloading image');
+            }
+        }
+
+        // Event listener for download button
+        document.getElementById('downloadImageButton').addEventListener('click', () => {
+            const fileName = document.getElementById('fileNameInput').value;
+            if (fileName) {
+                downloadImage(fileName);
+            } else {
+                alert('Please enter a file name');
+            }
+        });
+
     </script>
 </body>
 </html>

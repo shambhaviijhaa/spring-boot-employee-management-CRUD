@@ -31,3 +31,8 @@ This project serves as a practical example of building a full-stack web applicat
  emp_city VARCHAR(50) DEFAULT NULL,
  PRIMARY KEY (empid)
  );
+
+## Set FOLDER_PATH in com.codemyth.service.StorageService.java
+
+- private final String FOLDER_PATH="filePath";
+

@@ -24,7 +24,7 @@ public class StorageService {
     @Autowired
     private FileDataRepository fileDataRepository;
 
-    private final String FOLDER_PATH="C:\\Users\\shamb\\eclipse-workspace\\EmployesAPICRUD\\MyFiles";
+    private final String FOLDER_PATH="C:/Users/shamb/OneDrive/Desktop/MyFile/";
 
     public String uploadImage(MultipartFile file) throws IOException {
         ImageData imageData = repository.save(ImageData.builder()
